@@ -1,0 +1,33 @@
+{
+    "name": "corex/command",
+    "type": "project",
+    "description": "Command Framework for php",
+    "license": "MIT",
+    "keywords": [
+        "console",
+        "command"
+    ],
+    "authors": [
+        {
+            "name": "CoRex",
+            "email": "dev@corex.dk",
+            "homepage": "http://corex.dk",
+            "role": "Project Founder"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=5.5.9"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "CoRex\\Command\\": "src/"
+        }
+    },
+    "bin": [
+        "crcmd"
+    ]
+}
