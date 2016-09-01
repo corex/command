@@ -12,7 +12,7 @@ class RootCommand extends BaseCommand
     protected $signature = 'root
 		{--delete : Delete existing crcmd}
 		{--name= : Name of command. Default crcmd.}';
-    protected $description = 'Make root-command (crcmd) in current directory';
+    protected $description = 'Make root-command (crcmd?) in current directory';
     protected $visible = true;
 
     /**
