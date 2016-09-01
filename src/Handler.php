@@ -263,7 +263,7 @@ class Handler
     {
         $result = '';
         if (file_exists($filename)) {
-            $data = file_get_contents($filename);
+            $data = $this->getFileContent($filename);
             $data = explode("\n", $data);
             if (count($data) > 0) {
                 $namespace = '';
@@ -325,5 +325,21 @@ class Handler
             'component' => $component,
             'command' => $command
         ];
+    }
+
+    /**
+     * Get file content.
+     *
+     * @param string $filename
+     * @return string
+     */
+    private function getFileContent($filename)
+    {
+        $content = '';
+        if (file_exists($filename)) {
+            $content = file_get_contents($filename);
+            $content = str_replace("\r", '', $content);
+        }
+        return $content;
     }
 }
