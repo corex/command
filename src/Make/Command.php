@@ -12,6 +12,7 @@ class Command extends BaseCommand
         {class : Name of class.}';
     protected $description = 'Make command in current directory';
     protected $visible = true;
+
     /**
      * Run command.
      */
