@@ -1,0 +1,20 @@
+#!/usr/bin/env php
+<?php
+
+require_once({autoload});
+
+try {
+    $handler = new \CoRex\Command\Handler($argv, false, false);
+
+    // Uncomment and set path to your commands.
+    // Can be called more than once if you have multiple locations.
+//	$handler->registerOnPath(my-path);
+
+    // Uncomment and set name of class i.e. 'My\Special\Command::class'.
+    // Can be called more than once.
+//    $handler->register(My\Special\Command::class);
+
+    $handler->execute();
+} catch (Exception $e) {
+    print($e->getMessage() . "\n");
+}

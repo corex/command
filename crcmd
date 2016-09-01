@@ -1,0 +1,11 @@
+#!/usr/bin/env php
+<?php
+
+require_once(__DIR__ . '/src/init.php');
+
+try {
+    $handler = new \CoRex\Command\Handler($argv, true, $throughComposer);
+    $handler->execute();
+} catch (Exception $e) {
+    print($e->getMessage() . "\n");
+}
