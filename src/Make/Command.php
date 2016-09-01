@@ -14,7 +14,6 @@ class Command extends BaseCommand
     protected $visible = true;
     /**
      * Run command.
-     * @return boolean
      */
     public function run()
     {
