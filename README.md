@@ -40,3 +40,6 @@ This is a short description you will see on the list of available commands.
 This option can be either true or false. If false, it will not be visible on the list of commands. You can still use "help" to show command and it will still work.
 
 You code lives in a method called run().
+
+## Helpers when developing (Class'es)
+If you use "$this->" when developing, there will be a long list of methods to help you write commands i.e. table(), header(), info(), throwError(), words(), choice(), etc.
