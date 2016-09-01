@@ -1,0 +1,21 @@
+<?php
+
+namespace CoRex\Command\Make;
+
+use CoRex\Command\BaseCommand;
+
+class {Class} extends BaseCommand
+{
+    protected $component = 'component';
+    protected $signature = 'command';
+    protected $description = 'Description of command';
+    protected $visible = true;
+
+    /**
+     * Run command.
+     */
+    public function run()
+    {
+        $this->header($this->description);
+    }
+}

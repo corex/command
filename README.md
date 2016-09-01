@@ -11,6 +11,10 @@ Run "php crcmd help make:root" to create a "crcmd" in current directory. This fi
 
 Every command created must end in "Command.php" i.e. "MyCommand.php". Otherwise it will not be added to list of available commands.
 
+## Commands (internal).
+- make:command - This command creates commands.
+- make:root - This command creates a new "root"-command. Its possible to specify a new name.
+
 ## Dokumentation for command
 
 Look at Make/RootCommand (existing command) to see example.
