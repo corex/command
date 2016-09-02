@@ -107,7 +107,9 @@ class Handler
      */
     public function execute()
     {
-        if ($this->component == '') {
+        $signature = SignatureHandler::getSignature($this->component, $this->command);
+
+        if ($this->component == '' && $signature === null) {
             Console::header(self::TITLE);
             Console::title('Usage:');
             Console::writeln('  {component} {command} [options] [arguments]');
@@ -120,8 +122,6 @@ class Handler
             $this->show($this->component, $this->command);
             return false;
         }
-
-        $signature = SignatureHandler::getSignature($this->component, $this->command);
 
         if ($signature === null) {
             if ($this->command != '') {
@@ -174,7 +174,11 @@ class Handler
                     if (!$properties['visible']) {
                         continue;
                     }
-                    Console::write('    ' . $componentName . ':' . $command, $this->indentLength);
+                    if ($componentName != '') {
+                        Console::write('    ' . $componentName . ':' . $command, $this->indentLength);
+                    } else {
+                        Console::write('  ' . $command, $this->indentLength);
+                    }
                     Console::writeln($properties['description']);
                 }
             }
@@ -320,6 +324,10 @@ class Handler
             $argument = explode(':', strtolower($argument));
             $component = $argument[0];
             $command = isset($argument[1]) ? $argument[1] : '';
+            if ($component != '' && $command == '') {
+                $command = $component;
+                $component = '';
+            }
         }
         return [
             'component' => $component,

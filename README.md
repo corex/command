@@ -22,7 +22,7 @@ Look at Make/RootCommand (existing command) to see example.
 ### Properties
 
 #### $component
-Every command belongs to a component. This property specifies the name of component. Must be specified in lowercase.
+Every command belongs to a component. This property specifies the name of component. Must be specified in lowercase. This can be set to an empty string and will then be a "main"-command (no component).
 
 #### $signature
 This signature describes the arguments and options of the command. It follows the same setup as Laravel 5.
