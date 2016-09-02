@@ -19,12 +19,12 @@ Every command created must end in "Command.php" i.e. "MyCommand.php". Otherwise 
 
 Look at Make/RootCommand (existing command) to see example.
 
-Following properties must be set in command.
+### Properties
 
-### Property $component
+#### $component
 Every command belongs to a component. This property specifies the name of component. Must be specified in lowercase.
 
-### Property $signature
+#### $signature
 This signature describes the arguments and options of the command. It follows the same setup as Laravel 5.
 
 Format is "command {argument/--option : description} {argument/--option : description}"
@@ -33,10 +33,10 @@ Format is "command {argument/--option : description} {argument/--option : descri
   - Every argument is required unless you add a "?" at the end of argument-name. If "?" is added, argument will return null.
   - Every option must be prefix'ed with "--". If specified on command-line, it will be true, otherwise false. If you need to parse a value instead, add a "=" at the end.
 
-### Property $description
+#### $description
 This is a short description you will see on the list of available commands. 
 
-### Property $visible
+#### $visible
 This option can be either true or false. If false, it will not be visible on the list of commands. You can still use "help" to show command and it will still work.
 
 You code lives in a method called run().
