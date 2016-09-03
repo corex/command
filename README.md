@@ -41,5 +41,5 @@ This option can be either true or false. If false, it will not be visible on the
 
 You code lives in a method called run().
 
-## Helpers when developing (Class'es)
+## Helpers when developing
 If you use "$this->" when developing, there will be a long list of methods to help you write commands i.e. table(), header(), info(), throwError(), words(), choice(), etc.
