@@ -14,7 +14,7 @@ try {
     // Can be called more than once.
 //    $handler->register(My\Special\Command::class);
 
-    $handler->execute();
+    $handler->execute('{component}', '{command}');
 } catch (Exception $e) {
     print($e->getMessage() . "\n");
 }

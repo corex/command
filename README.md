@@ -7,7 +7,7 @@ All you need to use is this one package to start writing and use commands.
 
 Run "php crcmd" to see list of available commands.
 
-Run "php crcmd help make:root" to create a "crcmd" in current directory. This file can be modified to suit your needs i.e. disabling internal commands. You will also be able to specify a new name for created command.
+Run "php crcmd help make:shortcut" to create a shortcut in current directory. This file can be modified to suit your needs i.e. disabling internal commands. If you specify --command, you will be able to make a shortcut for a specific command.
 
 Every command created must end in "Command.php" i.e. "MyCommand.php". Otherwise it will not be added to list of available commands.
 
@@ -16,11 +16,11 @@ Every command created must end in "Command.php" i.e. "MyCommand.php". Otherwise 
 
 ## Commands (internal).
 - make:command - This command creates commands.
-- make:root - This command creates a new "root"-command. Its possible to specify a new name.
+- make:shortcut - This command creates a shortcut in current directory. If you specify --command, you will be able to make a shortcut for a specific command.
 
 ## Dokumentation for command
 
-Look at Make/RootCommand (existing command) to see example.
+Look at existing commands to see example. Source can be found in vendor package.
 
 ### Properties
 
@@ -46,3 +46,11 @@ You code lives in a method called run().
 
 ## Helpers when developing
 If you use "$this->" when developing, there will be a long list of methods to help you write commands i.e. table(), header(), info(), throwError(), words(), choice(), etc.
+
+## Start
+To start a new project using commands, do following:
+- Install package.
+- Setup namespace for commands.
+- Use "make:shortcut" to create a shortcut in root of your project.
+- Modify and set registerOnPath().
+- Use "make:command" to create a new commmand and modify it.

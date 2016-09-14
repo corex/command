@@ -102,11 +102,17 @@ class Handler
     /**
      * Execute command.
      *
+     * @param string $component Default ''.
+     * @param string $command Default ''.
      * @return boolean
      * @throws \Exception
      */
-    public function execute()
+    public function execute($component = '', $command = '')
     {
+        if ($component != '' && $command != '') {
+            $this->component = $component;
+            $this->command = $command;
+        }
         $signature = SignatureHandler::getSignature($this->component, $this->command);
 
         if ($this->component == '' && $signature === null) {
