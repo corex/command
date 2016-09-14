@@ -258,6 +258,62 @@ class Handler
     }
 
     /**
+     * Set component visibility.
+     *
+     * @param string $component
+     * @param boolean $visible
+     */
+    public function setComponentVisibility($component, $visible)
+    {
+        SignatureHandler::setComponentVisibility($component, $visible);
+    }
+
+    /**
+     * Hide component.
+     *
+     * @param string $component
+     */
+    public function hideComponent($component)
+    {
+        SignatureHandler::hideComponent($component);
+    }
+
+    /**
+     * Set command visibility.
+     *
+     * @param string $component
+     * @param string $command
+     * @param boolean $visible
+     */
+    public function setCommandVisibility($component, $command, $visible)
+    {
+        SignatureHandler::setCommandVisibility($component, $command, $visible);
+    }
+
+    /**
+     * Hide command.
+     *
+     * @param string $component
+     * @param string $command
+     */
+    public function hideCommand($component, $command)
+    {
+        SignatureHandler::hideCommand($component, $command);
+    }
+
+    /**
+     * Hide commands.
+     *
+     * @param string $component
+     * @param array $commands
+     * @throws \Exception
+     */
+    public function hideCommands($component, array $commands)
+    {
+        SignatureHandler::hideCommands($component, $commands);
+    }
+
+    /**
      * Extract full class.
      *
      * @param string $filename

@@ -5,6 +5,7 @@ namespace CoRex\Command;
 class SignatureHandler
 {
     private static $commands;
+    private static $visible;
 
     /**
      * Register command class.
@@ -148,6 +149,12 @@ class SignatureHandler
                 }
             }
         }
+
+        // Check if visibility is overridden.
+        if (isset(self::$visible[$component]['*']) && !self::$visible[$component]['*']) {
+            $result = false;
+        }
+
         return $result;
     }
 
@@ -231,9 +238,76 @@ class SignatureHandler
         $commands = array_keys(self::$commands[$component]);
         sort($commands);
         foreach ($commands as $command) {
+
+            // Check if visibility is overridden.
+            if (isset(self::$visible[$component][$command]) && !self::$visible[$component][$command]) {
+                continue;
+            }
+
             $result[$command] = self::$commands[$component][$command];
         }
         return $result;
+    }
+
+    /**
+     * Set component visibility.
+     *
+     * @param string $component
+     * @param boolean $visible
+     */
+    public static function setComponentVisibility($component, $visible)
+    {
+        self::$visible[$component]['*'] = $visible;
+    }
+
+    /**
+     * Hide component.
+     *
+     * @param string $component
+     */
+    public static function hideComponent($component)
+    {
+        self::setComponentVisibility($component, false);
+    }
+
+    /**
+     * Set command visibility.
+     *
+     * @param string $component
+     * @param string $command
+     * @param boolean $visible
+     */
+    public static function setCommandVisibility($component, $command, $visible)
+    {
+        self::$visible[$component][$command] = $visible;
+    }
+
+    /**
+     * Hide command.
+     *
+     * @param string $component
+     * @param string $command
+     */
+    public static function hideCommand($component, $command)
+    {
+        self::setCommandVisibility($component, $command, false);
+    }
+
+    /**
+     * Hide commands.
+     *
+     * @param string $component
+     * @param array $commands
+     * @throws \Exception
+     */
+    public static function hideCommands($component, array $commands)
+    {
+        if (!is_array($commands)) {
+            throw new \Exception('Specified commands parameter is not an array.');
+        }
+        foreach ($commands as $command) {
+            self::hideCommand($component, $command);
+        }
     }
 
     /**
@@ -270,6 +344,9 @@ class SignatureHandler
     {
         if (self::$commands === null) {
             self::$commands = [];
+        }
+        if (self::$visible === null) {
+            self::$visible = [];
         }
     }
 }
