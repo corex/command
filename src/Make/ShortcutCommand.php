@@ -25,11 +25,6 @@ class ShortcutCommand extends BaseCommand
     {
         $this->header($this->description);
 
-        // Make sure this command only works if installed through composer.
-//        if (!$this->throughComposer()) {
-//            Console::throwError('This command is not allowed unless installed through composer.');
-//        }
-
         $cmdFilename = $this->argument('name');
         $currentDirectory = getcwd();
 
