@@ -4,7 +4,7 @@ namespace CoRex\Command;
 
 class Handler
 {
-    const TITLE = 'CoRex Command.';
+    private $title = 'CoRex Command.';
     private $arguments;
     private $component;
     private $command;
@@ -51,6 +51,16 @@ class Handler
         $this->hideInternal = !$showInternalCommands;
         $this->registerOnPath(__DIR__);
         $this->throughComposer = $throughComposer;
+    }
+
+    /**
+     * Set title.
+     *
+     * @param string $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
     }
 
     /**
@@ -116,7 +126,7 @@ class Handler
         $signature = SignatureHandler::getSignature($this->component, $this->command);
 
         if ($this->component == '' && $signature === null) {
-            Console::header(self::TITLE);
+            Console::header($this->title);
             Console::title('Usage:');
             Console::writeln('  {component} {command} [options] [arguments]');
             Console::writeln('');
@@ -200,7 +210,7 @@ class Handler
      */
     public function show($component, $command)
     {
-        Console::header(self::TITLE);
+        Console::header($this->title);
         if ($component == '') {
             Console::throwError('Component not specified.');
         }
