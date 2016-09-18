@@ -10,9 +10,10 @@ class ShortcutCommand extends BaseCommand
 {
     protected $component = 'make';
     protected $signature = 'shortcut
-    	{name : Name of shortcut}
-		{--delete : Delete existing shortcut}
-		{--command= : Signature of command to execute}';
+        {name : Name of shortcut}
+        {command : Signature of command to execute (Specify - for list of commands)}
+        {filename : Existing file to use as template (Specify - for default)}
+        {--delete : Delete existing shortcut}';
     protected $description = 'Make shortcut in current directory';
     protected $visible = true;
 
@@ -25,14 +26,15 @@ class ShortcutCommand extends BaseCommand
     {
         $this->header($this->description);
 
-        $cmdFilename = $this->argument('name');
+        $newFilename = $this->argument('name');
+        $command = $this->argument('command');
+        $existingFilename = $this->argument('filename');
         $currentDirectory = getcwd();
 
         // Set command.
         $shortcutComponent = '';
         $shortcutCommand = '';
-        $command = $this->option('command');
-        if ($command !== null) {
+        if ($command !== null && $command != '-') {
             $command = explode(':', $command);
             if (count($command) < 2) {
                 return $this->error('Specified command is not valid.');
@@ -42,22 +44,39 @@ class ShortcutCommand extends BaseCommand
         }
 
         // Check if existance or delete.
-        if (file_exists($currentDirectory . '/' . $cmdFilename)) {
+        if (file_exists($currentDirectory . '/' . $newFilename)) {
             if ($this->option('delete')) {
-                unlink($currentDirectory . '/' . $cmdFilename);
+                unlink($currentDirectory . '/' . $newFilename);
             } else {
-                Console::throwError($cmdFilename . ' already exists.');
+                Console::throwError($newFilename . ' already exists.');
             }
         }
 
-        // Write stub.
-        $stubFilename = Path::getFramework(['stubs', 'shortcut.stub']);
+        // Get stub.
+        if ($existingFilename == '-') {
+            $stubFilename = Path::getFramework(['stubs', 'shortcut.stub']);
+        } else {
+            $stubFilename = $existingFilename;
+        }
         $stub = file_get_contents($stubFilename);
+
+        // Replace tokens.
         $stub = str_replace('{autoload}', Path::getAutoloadAsString(), $stub);
-        $stub = str_replace('{component}', $shortcutComponent, $stub);
-        $stub = str_replace('{command}', $shortcutCommand, $stub);
-        file_put_contents($currentDirectory . '/' . $cmdFilename, $stub);
-        chmod($currentDirectory . '/' . $cmdFilename, 0700);
-        $this->info('Shortcut ' . $cmdFilename . ' created in ' . $currentDirectory);
+        $stub = explode("\n", $stub);
+        if (count($stub) > 0) {
+            foreach ($stub as $index => $line) {
+                $executeHandlerPrefix = '$handler->execute(';
+                if (substr(trim($line), 0, strlen($executeHandlerPrefix)) == $executeHandlerPrefix) {
+                    $line = '    ' . $executeHandlerPrefix . '\'' . $shortcutComponent . '\', \'' . $shortcutCommand . '\');';
+                }
+                $stub[$index] = $line;
+            }
+        }
+        $stub = implode("\n", $stub);
+
+        // Write stub.
+        file_put_contents($currentDirectory . '/' . $newFilename, $stub);
+        chmod($currentDirectory . '/' . $newFilename, 0700);
+        $this->info('Shortcut ' . $newFilename . ' created in ' . $currentDirectory);
     }
 }
