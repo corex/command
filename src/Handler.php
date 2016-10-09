@@ -141,9 +141,14 @@ class Handler
 
         if ($signature === null) {
             if ($this->command != '') {
-                Console::header(self::TITLE);
+                Console::header($this->title);
+                $command = '';
+                if ($this->component != '') {
+                    $command .= $this->component . ':';
+                }
+                $command .= $this->command;
                 Console::throwError(
-                    'Command ' . $this->command . ' in component ' . $this->component . ' does not exist.'
+                    'Command ' . $command . ' does not exist.'
                 );
             }
             $this->showAll($this->component);
@@ -211,9 +216,6 @@ class Handler
     public function show($component, $command)
     {
         Console::header($this->title);
-        if ($component == '') {
-            Console::throwError('Component not specified.');
-        }
         if (!SignatureHandler::componentExist($component)) {
             Console::throwError('Component not found: ' . $component);
         }
@@ -231,7 +233,11 @@ class Handler
 
         // Show usage.
         Console::title('Usage:');
-        Console::write('  ' . $component . ':' . $command);
+        Console::write('  ');
+        if ($component != '') {
+            Console::write($component . ':');
+        }
+        Console::write($command);
         if (isset($signature['options']) && count($signature['options']) > 0) {
             Console::write(' [options]');
         }
