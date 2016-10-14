@@ -18,7 +18,7 @@ Every command created must end in "Command.php" i.e. "MyCommand.php". Otherwise 
 - make:command - This command creates commands.
 - make:shortcut - This command creates a shortcut in current directory.
 
-## Dokumentation for command
+## Documentation for command
 
 Look at existing commands to see example. Source can be found in vendor package.
 
