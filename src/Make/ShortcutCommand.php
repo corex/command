@@ -67,7 +67,8 @@ class ShortcutCommand extends BaseCommand
             foreach ($stub as $index => $line) {
                 $executeHandlerPrefix = '$handler->execute(';
                 if (substr(trim($line), 0, strlen($executeHandlerPrefix)) == $executeHandlerPrefix) {
-                    $line = '    ' . $executeHandlerPrefix . '\'' . $shortcutComponent . '\', \'' . $shortcutCommand . '\');';
+                    $line = '    ' . $executeHandlerPrefix . '\'' . $shortcutComponent;
+                    $line .= '\', \'' . $shortcutCommand . '\');';
                 }
                 $stub[$index] = $line;
             }

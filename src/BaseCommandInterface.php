@@ -6,6 +6,7 @@ interface BaseCommandInterface
 {
     /**
      * Run command.
+     *
      * @return boolean
      */
     public function run();
