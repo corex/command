@@ -338,6 +338,17 @@ abstract class BaseCommand implements BaseCommandInterface
     }
 
     /**
+     * Throw error-message as exception.
+     *
+     * @param string $message
+     * @throws \Exception
+     */
+    public function throwError($message)
+    {
+        Console::throwError($message);
+    }
+
+    /**
      * Get config.
      *
      * @param string $path Uses dot notation.
