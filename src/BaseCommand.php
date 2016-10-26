@@ -332,7 +332,7 @@ abstract class BaseCommand implements BaseCommandInterface
      * @param string $style Default ''.
      * @param string $separator Default ', '.
      */
-    public static function words(array $words, $style = '', $separator = ', ')
+    public function words(array $words, $style = '', $separator = ', ')
     {
         Console::words($words, $style, $separator);
     }
