@@ -341,7 +341,7 @@ abstract class BaseCommand implements BaseCommandInterface
      * Get config.
      *
      * @param string $path Uses dot notation.
-     * @param null $defaultValue Default null.
+     * @param mixed $defaultValue Default null.
      * @param boolean $throwException Default false.
      * @return mixed
      */
