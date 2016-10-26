@@ -73,11 +73,12 @@ class Console
      * Write header (title + separator).
      *
      * @param string $title
+     * @param string $style Default 'title'.
      */
-    public static function header($title)
+    public static function header($title, $style = 'title')
     {
         $title = str_pad($title, self::$lineLength, ' ', STR_PAD_RIGHT);
-        self::writeln($title, 0, 'title');
+        self::writeln($title, 0, $style);
         self::separator('=');
     }
 
