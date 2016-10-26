@@ -55,4 +55,22 @@ To start a new project using commands, do following:
 
 ## Config
 Setup configuration for your project.
-- 
+
+Setup config-path. Default is {root}/config.
+
+Use $this->config('path.to.my.config'). Uses dot-notation. First section is the file itself. Rest is array.
+
+Example:
+If you have following config-file config/vars.php with following array in it....
+```php
+return [
+    'test' => [
+        'example' => 'testing'
+    ]
+];
+```
+.... and you write ....
+```php
+$myVar = $this->config('vars.test.example');
+```
+.... you will get "testing".
