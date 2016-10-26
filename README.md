@@ -3,8 +3,6 @@ Command Framework for php.
 
 You will recognize some familiar patterns i.e. signature from Laravel but with additional properties. This is for future use in other frameworks and CMS'es.
 
-All you need to use is this one package to start writing and use commands.
-
 Run "php crcmd" to see list of available commands.
 
 Run "php crcmd help make:shortcut" to create a shortcut in current directory. This file can be modified to suit your needs i.e. disabling internal commands. If you specify --command, you will be able to make a shortcut for a specific command.
@@ -54,3 +52,7 @@ To start a new project using commands, do following:
 - Use "make:shortcut" to create a shortcut in root of your project.
 - Modify and set registerOnPath().
 - Use "make:command" to create a new commmand and modify it.
+
+## Config
+Setup configuration for your project.
+- 

@@ -2,6 +2,8 @@
 
 namespace CoRex\Command;
 
+use CoRex\Support\Config\Config;
+
 abstract class BaseCommand implements BaseCommandInterface
 {
     private $signature;
@@ -333,5 +335,18 @@ abstract class BaseCommand implements BaseCommandInterface
     public static function words(array $words, $style = '', $separator = ', ')
     {
         Console::words($words, $style, $separator);
+    }
+
+    /**
+     * Get config.
+     *
+     * @param string $path Uses dot notation.
+     * @param null $defaultValue Default null.
+     * @param boolean $throwException Default false.
+     * @return mixed
+     */
+    public function config($path, $defaultValue = null, $throwException = false)
+    {
+        return Config::get($path, $defaultValue, $throwException);
     }
 }
