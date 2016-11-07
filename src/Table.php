@@ -34,11 +34,13 @@ class Table
         if (!is_array($headers)) {
             return;
         }
+        $columnNumber = 0;
         foreach ($headers as $header) {
-            $this->updateWidth($header, strlen($header));
+            $this->updateWidth($columnNumber, strlen($header));
             if (!in_array($header, $this->headers)) {
                 $this->headers[] = $header;
             }
+            $columnNumber++;
         }
     }
 
@@ -53,11 +55,14 @@ class Table
             return;
         }
         foreach ($rows as $row) {
+            $columnNumber = 0;
             foreach ($row as $column => $value) {
-                $this->updateWidth($column, strlen($value));
+                $this->updateWidth($columnNumber, strlen($column));
+                $this->updateWidth($columnNumber, strlen($value));
                 if (!in_array($column, $this->columns)) {
                     $this->columns[] = $column;
                 }
+                $columnNumber++;
             }
             $this->rows[] = $row;
         }
@@ -79,13 +84,15 @@ class Table
         if (count($this->columns) > 0) {
             $line = [];
             $line[] = $this->charVertical;
+            $columnNumber = 0;
             foreach ($this->columns as $index => $column) {
                 $title = $column;
                 if (isset($this->headers[$index])) {
                     $title = $this->headers[$index];
                 }
-                $line[] = $this->renderCell($column, $title, ' ', 'info');
+                $line[] = $this->renderCell($columnNumber, $title, ' ', 'info');
                 $line[] = $this->charVertical;
+                $columnNumber++;
             }
             $output[] = implode('', $line);
         }
@@ -116,8 +123,8 @@ class Table
         $output = [];
         $output[] = $this->charCross;
         if (count($this->columns) > 0) {
-            foreach ($this->columns as $column) {
-                $output[] = $this->renderCell($column, $this->charHorizontal, $this->charHorizontal);
+            for ($columnNumber = 0; $columnNumber < count($this->columns); $columnNumber++) {
+                $output[] = $this->renderCell($columnNumber, $this->charHorizontal, $this->charHorizontal);
                 $output[] = $this->charCross;
             }
         }
@@ -134,9 +141,11 @@ class Table
     {
         $output = [];
         $output[] = $this->charVertical;
+        $columnNumber = 0;
         foreach ($row as $column => $value) {
-            $output[] = $this->renderCell($column, $value, ' ');
+            $output[] = $this->renderCell($columnNumber, $value, ' ');
             $output[] = $this->charVertical;
+            $columnNumber++;
         }
         return implode('', $output);
     }
@@ -144,16 +153,16 @@ class Table
     /**
      * Render cell.
      *
-     * @param string $column
+     * @param integer $columnNumber
      * @param string $value
      * @param string $filler
      * @param string $style Default ''.
      * @return string
      */
-    private function renderCell($column, $value, $filler, $style = '')
+    private function renderCell($columnNumber, $value, $filler, $style = '')
     {
         $output = [];
-        $width = $this->getWidth($column);
+        $width = $this->getWidth($columnNumber);
         $output[] = $filler;
         while (strlen($value) < $width) {
             $value .= $filler;
@@ -166,13 +175,13 @@ class Table
     /**
      * Get width of column.
      *
-     * @param string $column
+     * @param integer $columnNumber
      * @return integer
      */
-    private function getWidth($column)
+    private function getWidth($columnNumber)
     {
-        if (isset($this->widths[$column])) {
-            return intval($this->widths[$column]);
+        if (isset($this->widths[$columnNumber])) {
+            return $this->widths[$columnNumber];
         }
         return 0;
     }
@@ -180,13 +189,13 @@ class Table
     /**
      * Update width.
      *
-     * @param string $column
+     * @param integer $columnNumber
      * @param integer $width
      */
-    private function updateWidth($column, $width)
+    private function updateWidth($columnNumber, $width)
     {
-        if ($width > $this->getWidth($column)) {
-            $this->widths[$column] = $width;
+        if ($width > $this->getWidth($columnNumber)) {
+            $this->widths[$columnNumber] = $width;
         }
     }
 }
