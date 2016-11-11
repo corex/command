@@ -49,7 +49,7 @@ abstract class BaseCommand implements BaseCommandInterface
             }
             $this->arguments[$argument] = $value;
             if ($this->arguments[$argument] === null && !$properties['optional']) {
-                throw new \Exception('Argument required: ' . $argument);
+                throw new \Exception('Argument required: ' . $argument . " \n" . $properties['description']);
             }
             $argumentNumber++;
         }
