@@ -15,6 +15,9 @@ Every command created must end in "Command.php" i.e. "MyCommand.php". Otherwise 
 ## Commands (internal).
 - make:command - This command creates commands.
 - make:shortcut - This command creates a shortcut in current directory.
+- json:delete - Delete key.
+- json:get - Get key.
+- json:set - Set key in json.
 
 ## Documentation for command
 
