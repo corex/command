@@ -282,12 +282,13 @@ abstract class BaseCommand implements BaseCommandInterface
      * Confirm question.
      *
      * @param string $question
+     * @param boolean $allowShort Allow to use "y" / "n".
      * @param boolean $defaultValue Default false.
      * @return string
      */
-    public function confirm($question, $defaultValue = false)
+    public function confirm($question, $allowShort, $defaultValue = false)
     {
-        return Console::confirm($question, $defaultValue);
+        return Console::confirm($question, $allowShort, $defaultValue);
     }
 
     /**

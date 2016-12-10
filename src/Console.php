@@ -225,19 +225,15 @@ class Console
      * Confirm question.
      *
      * @param string $question
+     * @param boolean $allowShort Allow to use "y" / "n".
      * @param boolean $defaultValue Default false.
-     * @return string
+     * @return boolean
      */
-    public static function confirm($question, $defaultValue = false)
+    public static function confirm($question, $allowShort, $defaultValue = false)
     {
         $value = $defaultValue ? 'yes' : 'no';
         $value = self::ask($question . ' (yes/no)', $value);
-        if (substr($value, 0, 1) == 'y') {
-            $value = 'yes';
-        } else {
-            $value = 'no';
-        }
-        return $value;
+        return $value == 'yes' || ($value == 'y' && $allowShort);
     }
 
     /**
