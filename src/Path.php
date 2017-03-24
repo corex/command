@@ -2,48 +2,18 @@
 
 namespace CoRex\Command;
 
-class Path
+use CoRex\Support\System\Path as SupportPath;
+
+class Path extends SupportPath
 {
     /**
-     * Get path to root of site (works outside Joomla).
-     *
-     * @param array $segments Default [].
-     * @return string
-     */
-    public static function getRoot(array $segments = [])
-    {
-        $path = dirname(dirname(dirname(dirname(__DIR__))));
-        $path = str_replace('\\', '/', $path);
-        if (count($segments) > 0) {
-            $path .= '/' . implode('/', $segments);
-        }
-        return $path;
-    }
-
-    /**
-     * Get path to framework.
-     *
-     * @param array $segments Default [].
-     * @return string
-     */
-    public static function getFramework(array $segments = [])
-    {
-        $path = dirname(__DIR__);
-        $path = str_replace('\\', '/', $path);
-        if (count($segments) > 0) {
-            $path .= '/' . implode('/', $segments);
-        }
-        return $path;
-    }
-
-    /**
-     * Get full path + filename "vendor/autoload.php".
+     * Get package path.
      *
      * @return string
      */
-    public static function getAutoload()
+    protected static function packagePath()
     {
-        return self::getRoot(['vendor', 'autoload.php']);
+        return dirname(__DIR__);
     }
 
     /**
@@ -51,10 +21,10 @@ class Path
      *
      * @return string
      */
-    public static function getAutoloadAsString()
+    public static function autoloadAsString()
     {
         $pathCurrent = trim(str_replace('\\', '/', getcwd()), '/');
-        $pathAutoload = trim(self::getRoot(['vendor', 'autoload.php']), '/');
+        $pathAutoload = trim(self::root(['vendor', 'autoload.php']), '/');
         $pathCurrent = explode('/', $pathCurrent);
         $pathAutoload = explode('/', $pathAutoload);
 
