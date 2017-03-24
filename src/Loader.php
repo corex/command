@@ -19,9 +19,23 @@ class Loader
      */
     public static function autoLoader($class)
     {
+        $filename = self::resolveClassFilename($class);
+        if ($filename !== null && file_exists($filename)) {
+            require_once($filename);
+        }
+    }
+
+    /**
+     * Resolve class filename.
+     *
+     * @param string $class
+     * @return string
+     */
+    public static function resolveClassFilename($class)
+    {
         $prefix = 'CoRex\Command\\';
         if (substr($class, 0, strlen($prefix)) != $prefix) {
-            return;
+            return null;
         }
         $filename = str_replace($prefix, __DIR__ . '/', $class) . '.php';
         $filename = str_replace('\\', '/', $filename);
@@ -32,9 +46,6 @@ class Loader
             $filename = str_replace('src/Tests', 'tests', $filename);
         }
 
-        if (!file_exists($filename)) {
-            return;
-        }
-        require_once($filename);
+        return $filename;
     }
 }

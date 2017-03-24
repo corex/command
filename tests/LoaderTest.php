@@ -7,20 +7,22 @@ use PHPUnit\Framework\TestCase;
 class LoaderTest extends TestCase
 {
     /**
-     * Test not loaded.
+     * Test resolve class filename.
      */
-    public function testNotLoaded()
+    public function testResolveClassFilename()
     {
-        $this->assertFalse(class_exists(TestCommand::class));
+        $this->assertEquals(
+            __DIR__ . '/Command/TestCommand.php',
+            Loader::resolveClassFilename(TestCommand::class)
+        );
     }
 
     /**
-     * Test loaded.
+     * Test resolved class filename null.
      */
-    public function testLoaded()
+    public function testResolveClassFilenameNull()
     {
-        require_once(dirname(__DIR__) . '/src/Loader.php');
-        Loader::initialize();
-        $this->assertTrue(class_exists(TestCommand::class));
+        $class = 'UnknownClassNotFound';
+        $this->assertNull(Loader::resolveClassFilename($class));
     }
 }
