@@ -2,6 +2,8 @@
 
 namespace CoRex\Command;
 
+use CoRex\Support\System\Console;
+
 class SignatureHandler
 {
     private static $commands;
@@ -173,6 +175,9 @@ class SignatureHandler
     {
         self::initialize();
         $signature = self::getSignature($component, $command);
+        if ($signature === null) {
+            Console::throwError('Command not found.');
+        }
         $class = $signature['class'];
         if (!class_exists($class)) {
             Console::throwError('Class ' . $class . ' does not exist.');
@@ -180,8 +185,13 @@ class SignatureHandler
         $object = new $class();
         $object->setProperties($signature, $arguments, $throughComposer);
         $object->setSilent($silent);
+        if ($silent) {
+            ob_start();
+        }
         $result = $object->run();
-        $object->setSilent(false);
+        if ($silent) {
+            ob_end_clean();
+        }
         return $result;
     }
 
