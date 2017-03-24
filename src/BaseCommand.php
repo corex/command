@@ -2,7 +2,8 @@
 
 namespace CoRex\Command;
 
-use CoRex\Support\Config\Config;
+use CoRex\Support\Config;
+use CoRex\Support\System\Console;
 
 abstract class BaseCommand implements BaseCommandInterface
 {
@@ -149,14 +150,15 @@ abstract class BaseCommand implements BaseCommandInterface
     /**
      * Call command silently.
      *
+     * @param string $component
      * @param string $command
      * @param array $arguments
      * @return mixed
      * @throws \Exception
      */
-    public function callSilent($command, array $arguments = [])
+    public function callSilent($component, $command, array $arguments = [])
     {
-        return SignatureHandler::call($command, $arguments, true);
+        return SignatureHandler::call($component, $command, $arguments, true);
     }
 
     /**
@@ -359,6 +361,6 @@ abstract class BaseCommand implements BaseCommandInterface
      */
     public function config($path, $defaultValue = null, $throwException = false)
     {
-        return Config::get($path, $defaultValue, $throwException);
+        return Config::get($path, $defaultValue, null, $throwException);
     }
 }
