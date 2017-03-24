@@ -34,7 +34,7 @@ class SetCommand extends BaseCommand
         }
 
         $container = new Container();
-        $container->loadJson($filename);
+        $container->getJson($filename);
 
         // Validate type.
         if (!in_array($type, ['int', 'string', 'json'])) {
@@ -54,7 +54,7 @@ class SetCommand extends BaseCommand
         }
         $container->set($key, $value);
 
-        $container->saveJson($filename);
+        $container->putJson($filename);
 
         $this->info('Key ' . $key . ' set.');
     }

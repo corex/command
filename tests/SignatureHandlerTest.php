@@ -64,7 +64,7 @@ class SignatureHandlerTest extends TestCase
      */
     public function testCall()
     {
-        $this->assertTrue(true, 'This is tested in test BaseCommandTest.');
+        $this->assertTrue(true, 'This is tested elsewhere.');
     }
 
     /**

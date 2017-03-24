@@ -11,7 +11,7 @@ class TestCommand extends BaseCommand
         {param1 : Parameter 1}
         {param2 : Parameter 2}';
     protected $description = 'Test command';
-    protected $visible = false;
+    protected $visible = true;
 
     /**
      * Run command.

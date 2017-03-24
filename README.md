@@ -1,6 +1,8 @@
 # CoRex Command
 Command Framework for php.
 
+**_Versioning for this package follows http://semver.org/. Backwards compatibility might break on upgrade to major versions._**
+
 You will recognize some familiar patterns i.e. signature from Laravel but with additional properties. This is for future use in other frameworks and CMS'es.
 
 Run "php crcmd" to see list of available commands.

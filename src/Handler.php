@@ -2,6 +2,8 @@
 
 namespace CoRex\Command;
 
+use CoRex\Support\System\Console;
+
 class Handler
 {
     private $title = 'CoRex Command.';
@@ -196,9 +198,9 @@ class Handler
                         continue;
                     }
                     if ($componentName != '') {
-                        Console::write('    ' . $componentName . ':' . $command, $this->indentLength);
+                        Console::write('    ' . $componentName . ':' . $command, '', $this->indentLength);
                     } else {
-                        Console::write('  ' . $command, $this->indentLength);
+                        Console::write('  ' . $command, '', $this->indentLength);
                     }
                     Console::writeln($properties['description']);
                 }

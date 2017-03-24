@@ -30,9 +30,9 @@ class DeleteCommand extends BaseCommand
         }
 
         $container = new Container();
-        $container->loadJson($filename);
+        $container->getJson($filename);
         $container->delete($key);
-        $container->saveJson($filename);
+        $container->putJson($filename);
 
         $this->info('Key ' . $key . ' removed.');
     }

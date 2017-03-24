@@ -32,7 +32,7 @@ class GetCommand extends BaseCommand
         }
 
         $container = new Container();
-        $container->loadJson($filename);
+        $container->getJson($filename);
         $value = $container->get($key, $defaultValue);
 
         $this->write($value);

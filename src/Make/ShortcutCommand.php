@@ -3,8 +3,8 @@
 namespace CoRex\Command\Make;
 
 use CoRex\Command\BaseCommand;
-use CoRex\Command\Console;
 use CoRex\Command\Path;
+use CoRex\Support\System\Console;
 
 class ShortcutCommand extends BaseCommand
 {
@@ -54,14 +54,14 @@ class ShortcutCommand extends BaseCommand
 
         // Get stub.
         if ($existingFilename == '-') {
-            $stubFilename = Path::getFramework(['stubs', 'shortcut.stub']);
+            $stubFilename = Path::packageCurrent(['stubs', 'shortcut.stub']);
         } else {
             $stubFilename = $existingFilename;
         }
         $stub = file_get_contents($stubFilename);
 
         // Replace tokens.
-        $stub = str_replace('{autoload}', Path::getAutoloadAsString(), $stub);
+        $stub = str_replace('{autoload}', Path::autoloadAsString(), $stub);
         $stub = explode("\n", $stub);
         if (count($stub) > 0) {
             foreach ($stub as $index => $line) {

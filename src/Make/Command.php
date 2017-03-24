@@ -30,7 +30,7 @@ class Command extends BaseCommand
 
         // Write stub.
         $commandFilename = $class . '.php';
-        $stubFilename = Path::getFramework(['stubs', 'command.stub']);
+        $stubFilename = Path::packageCurrent(['stubs', 'command.stub']);
         $stub = file_get_contents($stubFilename);
         $stub = str_replace('{namespace}', $namespace, $stub);
         $stub = str_replace('{Class}', $class, $stub);
