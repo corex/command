@@ -15,8 +15,6 @@ class TestCommand extends BaseCommand
 
     /**
      * Run command.
-     *
-     * @return boolean
      */
     public function run()
     {
