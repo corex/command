@@ -6,6 +6,7 @@ if (!ini_get('date.timezone')) {
 
 $paths = [
     dirname(dirname(dirname(__DIR__))),
+    dirname(dirname(dirname(__DIR__))) . '/vendor',
     dirname(dirname(__DIR__)) . '/vendor',
     dirname(__DIR__ . '/vendor')
 ];
