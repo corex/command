@@ -11,7 +11,7 @@ class PathTest extends TestCase
     public function testAutoloadAsString()
     {
         $this->assertEquals(
-            'dirname(dirname(__DIR__)) . \'/autoload.php\'',
+            '__DIR__ . \'/vendor/autoload.php\'',
             Path::autoloadAsString()
         );
     }
