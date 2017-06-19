@@ -14,7 +14,7 @@
         }
     ],
     "require": {
-        "php": "^7.0",
+        "php": ">=5.6.4",
         "corex/support": "^2.0"
     },
     "require-dev": {
