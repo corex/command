@@ -320,12 +320,12 @@ abstract class BaseCommand implements BaseCommandInterface
     /**
      * Show table.
      *
-     * @param array $headers
-     * @param array $rows
+     * @param array $headers Specify [] for associative headers.
+     * @param array $rows Associative rows.
      */
     public function table(array $headers, array $rows)
     {
-        Console::table($headers, $rows);
+        Console::table($rows, $headers);
     }
 
     /**
