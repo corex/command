@@ -299,6 +299,14 @@ class BaseCommandTest extends TestCase
     }
 
     /**
+     * Test properties.
+     */
+    public function testProperties()
+    {
+        $this->assertTrue(true, 'This is tested elsewhere.');
+    }
+
+    /**
      * Initialize command handler.
      *
      * @param array $arguments Default [].

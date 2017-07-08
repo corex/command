@@ -363,4 +363,15 @@ abstract class BaseCommand implements BaseCommandInterface
     {
         return Config::get($path, $defaultValue, null, $throwException);
     }
+
+    /**
+     * Properties.
+     *
+     * @param array $data
+     * @param string $separator Default ':'.
+     */
+    public function properties(array $data, $separator = ':')
+    {
+        Console::properties($data, $separator);
+    }
 }
