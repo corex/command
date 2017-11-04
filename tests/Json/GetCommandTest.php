@@ -1,8 +1,8 @@
 <?php
 
+use CoRex\Command\Commands;
 use CoRex\Command\Handler;
 use CoRex\Command\Loader;
-use CoRex\Command\SignatureHandler;
 use CoRex\Support\System\Directory;
 use PHPUnit\Framework\TestCase;
 
@@ -48,7 +48,7 @@ class GetCommandTest extends TestCase
 
         // Test.
         ob_start();
-        SignatureHandler::call('json', 'get', [$filename, 'param2', 'Param 3'], false);
+        Commands::getInstance()->call('json', 'get', [$filename, 'param2', 'Param 3'], false);
         $content = ob_get_clean();
         $this->assertEquals('Param 2', $content);
     }

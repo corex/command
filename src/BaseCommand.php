@@ -144,7 +144,7 @@ abstract class BaseCommand implements BaseCommandInterface
      */
     public function call($component, $command, array $arguments = [], $silent = false)
     {
-        return SignatureHandler::call($component, $command, $arguments, $silent);
+        return Commands::call($component, $command, $arguments, $silent);
     }
 
     /**
@@ -158,7 +158,7 @@ abstract class BaseCommand implements BaseCommandInterface
      */
     public function callSilent($component, $command, array $arguments = [])
     {
-        return SignatureHandler::call($component, $command, $arguments, true);
+        return Commands::call($component, $command, $arguments, true);
     }
 
     /**

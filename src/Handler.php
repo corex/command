@@ -11,7 +11,6 @@ class Handler
     private $component;
     private $command;
     private $isHelp;
-    private $hideInternal;
     private $throughComposer;
     private $indentLength;
 
@@ -49,8 +48,9 @@ class Handler
         $this->command = $argumentParts['command'];
         $this->arguments = array_values($arguments);
 
-        // Scan for internal commands.
-        $this->hideInternal = !$showInternalCommands;
+        Commands::getInstance()->hideInternal(!$showInternalCommands);
+
+        // Register internal commands.
         $this->registerOnPath(__DIR__);
         $this->throughComposer = $throughComposer;
     }
@@ -73,7 +73,7 @@ class Handler
      */
     public function register($class)
     {
-        SignatureHandler::register($class, $this->hideInternal);
+        Commands::getInstance()->register($class);
     }
 
     /**
@@ -83,32 +83,7 @@ class Handler
      */
     public function registerOnPath($path)
     {
-        $path = str_replace('\\', '/', $path);
-        if (strlen($path) > 0 && substr($path, -1) == '/') {
-            $path = rtrim($path, '//');
-        }
-        if (!is_dir($path)) {
-            return;
-        }
-        $files = scandir($path);
-        if (count($files) == 0) {
-            return;
-        }
-        $commandSuffix = 'Command.php';
-        foreach ($files as $file) {
-            if (substr($file, 0, 1) == '.') {
-                continue;
-            }
-            if (substr($file, -strlen($commandSuffix)) == $commandSuffix) {
-                $class = $this->extractFullClass($path . '/' . $file);
-                if ($class != '') {
-                    $this->register($class);
-                }
-            }
-            if (is_dir($path . '/' . $file)) {
-                $this->registerOnPath($path . '/' . $file);
-            }
-        }
+        Commands::getInstance()->registerOnPath($path);
     }
 
     /**
@@ -125,7 +100,7 @@ class Handler
             $this->component = $component;
             $this->command = $command;
         }
-        $signature = SignatureHandler::getSignature($this->component, $this->command);
+        $signature = Commands::getInstance()->getSignature($this->component, $this->command);
 
         if ($this->component == '' && $signature === null) {
             Console::header($this->title);
@@ -162,7 +137,13 @@ class Handler
         if (!in_array('setProperties', get_class_methods($class))) {
             Console::throwError($class . ' does not extend CoRex\Command\BaseCommand.');
         }
-        SignatureHandler::call($this->component, $this->command, $this->arguments, false, $this->throughComposer);
+        Commands::getInstance()->call(
+            $this->component,
+            $this->command,
+            $this->arguments,
+            false,
+            $this->throughComposer
+        );
 
         return true;
     }
@@ -176,23 +157,23 @@ class Handler
     public function showAll($component = '')
     {
         if ($component != '') {
-            if (!SignatureHandler::componentExist($component)) {
+            if (!Commands::getInstance()->componentExist($component)) {
                 Console::throwError('Component not found: ' . $component);
             }
         } else {
             Console::title('Available commands:');
         }
-        $components = SignatureHandler::getComponents();
+        $components = Commands::getInstance()->getComponents();
         if (count($components) > 0) {
             foreach ($components as $componentName) {
                 if ($component != '' && $componentName != $component) {
                     continue;
                 }
-                if (!SignatureHandler::isComponentVisible($componentName)) {
+                if (!Commands::getInstance()->isComponentVisible($componentName)) {
                     continue;
                 }
                 Console::title('  ' . $componentName);
-                $commands = SignatureHandler::getCommands($componentName);
+                $commands = Commands::getInstance()->getCommands($componentName);
                 foreach ($commands as $command => $properties) {
                     if (!$properties['visible']) {
                         continue;
@@ -218,13 +199,13 @@ class Handler
     public function show($component, $command)
     {
         Console::header($this->title);
-        if (!SignatureHandler::componentExist($component)) {
+        if (!Commands::getInstance()->componentExist($component)) {
             Console::throwError('Component not found: ' . $component);
         }
         if ($command == '') {
             Console::throwError('Command not specified.');
         }
-        $signature = SignatureHandler::getSignature($component, $command);
+        $signature = Commands::getInstance()->getSignature($component, $command);
         if ($signature === null) {
             Console::throwError('Command not found: ' . $command);
         }
@@ -289,7 +270,7 @@ class Handler
      */
     public function setComponentVisibility($component, $visible)
     {
-        SignatureHandler::setComponentVisibility($component, $visible);
+        Commands::getInstance()->setComponentVisibility($component, $visible);
     }
 
     /**
@@ -299,7 +280,7 @@ class Handler
      */
     public function hideComponent($component)
     {
-        SignatureHandler::hideComponent($component);
+        Commands::getInstance()->hideComponent($component);
     }
 
     /**
@@ -311,7 +292,7 @@ class Handler
      */
     public function setCommandVisibility($component, $command, $visible)
     {
-        SignatureHandler::setCommandVisibility($component, $command, $visible);
+        Commands::getInstance()->setCommandVisibility($component, $command, $visible);
     }
 
     /**
@@ -322,7 +303,7 @@ class Handler
      */
     public function hideCommand($component, $command)
     {
-        SignatureHandler::hideCommand($component, $command);
+        Commands::getInstance()->hideCommand($component, $command);
     }
 
     /**
@@ -334,60 +315,7 @@ class Handler
      */
     public function hideCommands($component, array $commands)
     {
-        SignatureHandler::hideCommands($component, $commands);
-    }
-
-    /**
-     * Extract full class.
-     *
-     * @param string $filename
-     * @return string
-     */
-    private function extractFullClass($filename)
-    {
-        $result = '';
-        if (file_exists($filename)) {
-            $data = $this->getFileContent($filename);
-            $data = explode("\n", $data);
-            if (count($data) > 0) {
-                $namespace = '';
-                $class = '';
-                foreach ($data as $line) {
-                    $line = str_replace('  ', ' ', $line);
-                    if (substr($line, 0, 9) == 'namespace') {
-                        $namespace = $this->getPart($line, 2, ' ');
-                        $namespace = rtrim($namespace, ';');
-                    }
-                    if (substr($line, 0, 5) == 'class') {
-                        $class = $this->getPart($line, 2, ' ');
-                    }
-                }
-                if ($namespace != '' && $class != '') {
-                    $result = $namespace . '\\' . $class;
-                }
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * Get part.
-     *
-     * @param string $data
-     * @param integer $index
-     * @param string $separator Trims data on $separator..
-     * @return string
-     */
-    private function getPart($data, $index, $separator)
-    {
-        $data = trim($data, $separator) . $separator;
-        if ($data != '') {
-            $data = explode($separator, $data);
-            if (isset($data[$index - 1])) {
-                return $data[$index - 1];
-            }
-        }
-        return '';
+        Commands::getInstance()->hideCommands($component, $commands);
     }
 
     /**
@@ -413,21 +341,5 @@ class Handler
             'component' => $component,
             'command' => $command
         ];
-    }
-
-    /**
-     * Get file content.
-     *
-     * @param string $filename
-     * @return string
-     */
-    private function getFileContent($filename)
-    {
-        $content = '';
-        if (file_exists($filename)) {
-            $content = file_get_contents($filename);
-            $content = str_replace("\r", '', $content);
-        }
-        return $content;
     }
 }

@@ -4,21 +4,66 @@ namespace CoRex\Command;
 
 use CoRex\Support\System\Console;
 
-class SignatureHandler
+class Commands
 {
-    private static $commands;
-    private static $visible;
+    private static $instance;
+    private $commands;
+    private $visible;
+    private $hideInternal;
+
+    /**
+     * Commands constructor.
+     */
+    public function __construct()
+    {
+        $this->clear();
+    }
+
+    /**
+     * Get instance.
+     *
+     * @return Commands
+     */
+    public static function getInstance()
+    {
+        if (!is_object(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    /**
+     * Clear.
+     */
+    public function clear()
+    {
+        $this->commands = [];
+        $this->visible = [];
+        $this->hideInternal = false;
+    }
+
+    /**
+     * Hide internal.
+     *
+     * @param boolean $hideInternal
+     */
+    public function hideInternal($hideInternal)
+    {
+        $this->hideInternal = $hideInternal;
+    }
 
     /**
      * Register command class.
      *
      * @param string $class
-     * @param boolean $hideInternal
      * @throws \Exception
      */
-    public static function register($class, $hideInternal)
+    public function register($class)
     {
-        self::initialize();
+        // Check if $hideInternal is set.
+        if ($this->hideInternal === null) {
+            Console::throwError(__CLASS__ . '::hideInternal() must be called prior to register any commands.');
+        }
 
         if (!is_string($class)) {
             Console::throwError('You must specify name of class i.e. MyClass::class');
@@ -49,7 +94,7 @@ class SignatureHandler
 
         // Hide internal command if needed.
         $internalCommandPrefix = 'CoRex\Command\\';
-        if ($hideInternal && substr($class, 0, strlen($internalCommandPrefix)) == $internalCommandPrefix) {
+        if ($this->hideInternal && substr($class, 0, strlen($internalCommandPrefix)) == $internalCommandPrefix) {
             $visible = false;
         }
 
@@ -105,10 +150,10 @@ class SignatureHandler
             }
         }
 
-        if (!isset(self::$commands[$component])) {
-            self::$commands[$component] = [];
+        if (!isset($this->commands[$component])) {
+            $this->commands[$component] = [];
         }
-        self::$commands[$component][$command] = [
+        $this->commands[$component][$command] = [
             'class' => $class,
             'description' => $description,
             'visible' => $visible,
@@ -118,18 +163,52 @@ class SignatureHandler
     }
 
     /**
+     * Register all classes in path and sub-path.
+     *
+     * @param string $path
+     */
+    public function registerOnPath($path)
+    {
+        $path = str_replace('\\', '/', $path);
+        if (strlen($path) > 0 && substr($path, -1) == '/') {
+            $path = rtrim($path, '//');
+        }
+        if (!is_dir($path)) {
+            return;
+        }
+        $files = scandir($path);
+        if (count($files) == 0) {
+            return;
+        }
+        $commandSuffix = 'Command.php';
+        foreach ($files as $file) {
+            if (substr($file, 0, 1) == '.') {
+                continue;
+            }
+            if (substr($file, -strlen($commandSuffix)) == $commandSuffix) {
+                $class = self::extractFullClass($path . '/' . $file);
+                if ($class != '') {
+                    self::register($class);
+                }
+            }
+            if (is_dir($path . '/' . $file)) {
+                self::registerOnPath($path . '/' . $file);
+            }
+        }
+    }
+
+    /**
      * Get signature.
      *
      * @param string $component
      * @param string $command
      * @return array|null
      */
-    public static function getSignature($component, $command)
+    public function getSignature($component, $command)
     {
-        self::initialize();
         $data = null;
-        if (isset(self::$commands[$component][$command])) {
-            $data = self::$commands[$component][$command];
+        if (isset($this->commands[$component][$command])) {
+            $data = $this->commands[$component][$command];
         }
         return $data;
     }
@@ -140,7 +219,7 @@ class SignatureHandler
      * @param string $component
      * @return boolean
      */
-    public static function isComponentVisible($component)
+    public function isComponentVisible($component)
     {
         $result = false;
         $commands = self::getCommands($component);
@@ -153,7 +232,7 @@ class SignatureHandler
         }
 
         // Check if visibility is overridden.
-        if (isset(self::$visible[$component]['*']) && !self::$visible[$component]['*']) {
+        if (isset($this->visible[$component]['*']) && !$this->visible[$component]['*']) {
             $result = false;
         }
 
@@ -171,9 +250,8 @@ class SignatureHandler
      * @return mixed
      * @throws \Exception
      */
-    public static function call($component, $command, array $arguments = [], $silent = false, $throughComposer = false)
+    public function call($component, $command, array $arguments = [], $silent = false, $throughComposer = false)
     {
-        self::initialize();
         $signature = self::getSignature($component, $command);
         if ($signature === null) {
             Console::throwError('Command not found.');
@@ -182,7 +260,7 @@ class SignatureHandler
         if (!class_exists($class)) {
             Console::throwError('Class ' . $class . ' does not exist.');
         }
-        $object = new $class();
+        $object = self::newCommand($class);
         $object->setProperties($signature, $arguments, $throughComposer);
         $object->setSilent($silent);
         if ($silent) {
@@ -201,9 +279,9 @@ class SignatureHandler
      * @param string $component
      * @return boolean
      */
-    public static function componentExist($component)
+    public function componentExist($component)
     {
-        return isset(self::$commands[$component]);
+        return isset($this->commands[$component]);
     }
 
     /**
@@ -213,9 +291,9 @@ class SignatureHandler
      * @param string $command
      * @return boolean
      */
-    public static function commandExist($component, $command)
+    public function commandExist($component, $command)
     {
-        return isset(self::$commands[$component][$command]);
+        return isset($this->commands[$component][$command]);
     }
 
     /**
@@ -223,12 +301,12 @@ class SignatureHandler
      *
      * @return array
      */
-    public static function getComponents()
+    public function getComponents()
     {
-        if (count(self::$commands) == 0) {
+        if (count($this->commands) == 0) {
             return [];
         }
-        $components = array_keys(self::$commands);
+        $components = array_keys($this->commands);
         sort($components);
         return $components;
     }
@@ -239,22 +317,22 @@ class SignatureHandler
      * @param string $component
      * @return array
      */
-    public static function getCommands($component)
+    public function getCommands($component)
     {
-        if (!isset(self::$commands[$component])) {
+        if (!isset($this->commands[$component])) {
             return [];
         }
         $result = [];
-        $commands = array_keys(self::$commands[$component]);
+        $commands = array_keys($this->commands[$component]);
         sort($commands);
         foreach ($commands as $command) {
 
             // Check if visibility is overridden.
-            if (isset(self::$visible[$component][$command]) && !self::$visible[$component][$command]) {
+            if (isset($this->visible[$component][$command]) && !$this->visible[$component][$command]) {
                 continue;
             }
 
-            $result[$command] = self::$commands[$component][$command];
+            $result[$command] = $this->commands[$component][$command];
         }
         return $result;
     }
@@ -265,9 +343,9 @@ class SignatureHandler
      * @param string $component
      * @param boolean $visible
      */
-    public static function setComponentVisibility($component, $visible)
+    public function setComponentVisibility($component, $visible)
     {
-        self::$visible[$component]['*'] = $visible;
+        $this->visible[$component]['*'] = $visible;
     }
 
     /**
@@ -275,7 +353,7 @@ class SignatureHandler
      *
      * @param string $component
      */
-    public static function hideComponent($component)
+    public function hideComponent($component)
     {
         self::setComponentVisibility($component, false);
     }
@@ -287,9 +365,9 @@ class SignatureHandler
      * @param string $command
      * @param boolean $visible
      */
-    public static function setCommandVisibility($component, $command, $visible)
+    public function setCommandVisibility($component, $command, $visible)
     {
-        self::$visible[$component][$command] = $visible;
+        $this->visible[$component][$command] = $visible;
     }
 
     /**
@@ -298,7 +376,7 @@ class SignatureHandler
      * @param string $component
      * @param string $command
      */
-    public static function hideCommand($component, $command)
+    public function hideCommand($component, $command)
     {
         self::setCommandVisibility($component, $command, false);
     }
@@ -310,7 +388,7 @@ class SignatureHandler
      * @param array $commands
      * @throws \Exception
      */
-    public static function hideCommands($component, array $commands)
+    public function hideCommands($component, array $commands)
     {
         if (!is_array($commands)) {
             throw new \Exception('Specified commands parameter is not an array.');
@@ -327,7 +405,7 @@ class SignatureHandler
      * @param array $data
      * @return array
      */
-    private static function convertCommandToArray($command, array $data)
+    private function convertCommandToArray($command, array $data)
     {
         if ($command == '') {
             return [];
@@ -348,15 +426,82 @@ class SignatureHandler
     }
 
     /**
-     * Initialize.
+     * Extract full class.
+     *
+     * @param string $filename
+     * @return string
      */
-    private static function initialize()
+    private function extractFullClass($filename)
     {
-        if (self::$commands === null) {
-            self::$commands = [];
+        $result = '';
+        if (file_exists($filename)) {
+            $data = self::getFileContent($filename);
+            $data = explode("\n", $data);
+            if (count($data) > 0) {
+                $namespace = '';
+                $class = '';
+                foreach ($data as $line) {
+                    $line = str_replace('  ', ' ', $line);
+                    if (substr($line, 0, 9) == 'namespace') {
+                        $namespace = self::getPart($line, 2, ' ');
+                        $namespace = rtrim($namespace, ';');
+                    }
+                    if (substr($line, 0, 5) == 'class') {
+                        $class = self::getPart($line, 2, ' ');
+                    }
+                }
+                if ($namespace != '' && $class != '') {
+                    $result = $namespace . '\\' . $class;
+                }
+            }
         }
-        if (self::$visible === null) {
-            self::$visible = [];
+        return $result;
+    }
+
+    /**
+     * Get file content.
+     *
+     * @param string $filename
+     * @return string
+     */
+    private function getFileContent($filename)
+    {
+        $content = '';
+        if (file_exists($filename)) {
+            $content = file_get_contents($filename);
+            $content = str_replace("\r", '', $content);
         }
+        return $content;
+    }
+
+    /**
+     * Get part.
+     *
+     * @param string $data
+     * @param integer $index
+     * @param string $separator Trims data on $separator..
+     * @return string
+     */
+    private function getPart($data, $index, $separator)
+    {
+        $data = trim($data, $separator) . $separator;
+        if ($data != '') {
+            $data = explode($separator, $data);
+            if (isset($data[$index - 1])) {
+                return $data[$index - 1];
+            }
+        }
+        return '';
+    }
+
+    /**
+     * New command.
+     *
+     * @param string $commandClass
+     * @return BaseCommand
+     */
+    private function newCommand($commandClass)
+    {
+        return new $commandClass();
     }
 }

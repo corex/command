@@ -1,8 +1,8 @@
 <?php
 
+use CoRex\Command\Commands;
 use CoRex\Command\Handler;
 use CoRex\Command\Loader;
-use CoRex\Command\SignatureHandler;
 use CoRex\Support\System\Directory;
 use PHPUnit\Framework\TestCase;
 
@@ -42,7 +42,7 @@ class ShortcutCommandTest extends TestCase
         chdir($this->tempDirectory);
 
         // Test.
-        SignatureHandler::call('make', 'shortcut', ['test', '-', '-'], true);
+        Commands::getInstance()->call('make', 'shortcut', ['test', '-', '-'], true);
         $filename = $this->tempDirectory . '/test';
         $this->assertFileExists($filename);
 

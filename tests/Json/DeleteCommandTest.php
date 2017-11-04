@@ -1,8 +1,8 @@
 <?php
 
+use CoRex\Command\Commands;
 use CoRex\Command\Handler;
 use CoRex\Command\Loader;
-use CoRex\Command\SignatureHandler;
 use CoRex\Support\System\Directory;
 use PHPUnit\Framework\TestCase;
 
@@ -47,7 +47,7 @@ class DeleteCommandTest extends TestCase
         file_put_contents($filename, $json);
 
         // Test.
-        SignatureHandler::call('json', 'delete', [$filename, 'param2'], true);
+        Commands::getInstance()->call('json', 'delete', [$filename, 'param2'], true);
         $json = file_get_contents($filename);
         $this->assertEquals(
             ['param1' => 'Param 1', 'param3' => 'Param 3'],

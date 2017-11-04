@@ -25,6 +25,11 @@
             "CoRex\\Command\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\CoRex\\": "tests/"
+        }
+    },
     "bin": [
         "crcmd"
     ]

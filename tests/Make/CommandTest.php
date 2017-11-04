@@ -1,8 +1,8 @@
 <?php
 
+use CoRex\Command\Commands;
 use CoRex\Command\Handler;
 use CoRex\Command\Loader;
-use CoRex\Command\SignatureHandler;
 use CoRex\Support\System\Directory;
 use PHPUnit\Framework\TestCase;
 
@@ -42,7 +42,7 @@ class CommandTest extends TestCase
         chdir($this->tempDirectory);
 
         // Test.
-        SignatureHandler::call('make', 'command', ['Test', 'Test/Namespace'], true);
+        Commands::getInstance()->call('make', 'command', ['Test', 'Test/Namespace'], true);
         $filename = $this->tempDirectory . '/TestCommand.php';
         $this->assertFileExists($filename);
         $content = file_get_contents($filename);

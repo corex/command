@@ -1,10 +1,10 @@
 <?php
 
+use CoRex\Command\Commands;
 use CoRex\Command\Handler;
 use CoRex\Command\Loader;
-use CoRex\Command\SignatureHandler;
-use CoRex\Command\Tests\Command\TestCommand;
 use PHPUnit\Framework\TestCase;
+use Tests\CoRex\Command\TestCommand;
 
 class HandlerTest extends TestCase
 {
@@ -13,7 +13,6 @@ class HandlerTest extends TestCase
     private $param1 = 'param1';
     private $param2 = 'param2';
     private $description = 'Test command';
-    private $visible = false;
 
     /**
      * Test constructor.
@@ -30,7 +29,6 @@ class HandlerTest extends TestCase
         $this->assertEquals($this->component, $properties['component']);
         $this->assertEquals($this->command, $properties['command']);
         $this->assertFalse($properties['isHelp']);
-        $this->assertFalse($properties['hideInternal']);
         $this->assertFalse($properties['throughComposer']);
         $this->assertEquals(30, $properties['indentLength']);
     }
@@ -60,14 +58,15 @@ class HandlerTest extends TestCase
      */
     public function testRegisterOnPath()
     {
+        Commands::getInstance()->clear();
         $this->initialize(false);
         $handler = new Handler([], false, false);
         $handler->registerOnPath(__DIR__);
-        $commands = SignatureHandler::getCommands($this->component);
+        $commands = Commands::getInstance()->getCommands($this->component);
         $commandProperties = $commands[$this->command];
         $this->assertEquals(TestCommand::class, $commandProperties['class']);
         $this->assertEquals($this->description, $commandProperties['description']);
-        $this->assertEquals($this->visible, $commandProperties['visible']);
+        $this->assertTrue($commandProperties['visible']);
         $this->assertEquals([$this->param1, $this->param2], array_keys($commandProperties['arguments']));
         $this->assertEquals([], array_keys($commandProperties['options']));
     }
@@ -210,7 +209,9 @@ class HandlerTest extends TestCase
         require_once(dirname(__DIR__) . '/src/Loader.php');
         Loader::initialize();
         if ($registerCommand) {
-            SignatureHandler::register(TestCommand::class, true);
+            Commands::getInstance()->hideInternal(true);
+            Commands::getInstance()->register(TestCommand::class);
+            Commands::getInstance()->hideInternal(false);
         }
     }
 }

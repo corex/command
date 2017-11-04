@@ -1,6 +1,6 @@
 <?php
 
-namespace CoRex\Command\Tests\Command;
+namespace Tests\CoRex\Command;
 
 use CoRex\Command\BaseCommand;
 

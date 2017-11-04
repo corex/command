@@ -1,18 +1,19 @@
 <?php
 
+use CoRex\Command\Commands;
 use CoRex\Command\Loader;
-use CoRex\Command\SignatureHandler;
-use CoRex\Command\Tests\Command\TestCommand;
+use CoRex\Support\Obj;
 use PHPUnit\Framework\TestCase;
+use Tests\CoRex\Command\TestCommand;
 
-class SignatureHandlerTest extends TestCase
+class CommandsTest extends TestCase
 {
     private $component = 'test';
     private $command = 'command';
     private $param1 = 'param1';
     private $param2 = 'param2';
     private $description = 'Test command';
-    private $visible = false;
+    private $visible = true;
 
     /**
      * Tet register.
@@ -20,7 +21,7 @@ class SignatureHandlerTest extends TestCase
     public function testRegister()
     {
         $this->initialize(true);
-        $properties = $this->getPrivatePropertiesFromStaticClass(SignatureHandler::class);
+        $properties = $this->getPrivatePropertiesFromObject(Commands::getInstance());
         $this->assertArrayHasKey('commands', $properties);
         $this->assertArrayHasKey('visible', $properties);
         $this->assertNotNull($properties['commands']);
@@ -42,7 +43,7 @@ class SignatureHandlerTest extends TestCase
     public function testGetSignature()
     {
         $this->initialize(true);
-        $commandProperties = SignatureHandler::getSignature($this->component, $this->command);
+        $commandProperties = Commands::getInstance()->getSignature($this->component, $this->command);
         $this->assertEquals(TestCommand::class, $commandProperties['class']);
         $this->assertEquals($this->description, $commandProperties['description']);
         $this->assertEquals($this->visible, $commandProperties['visible']);
@@ -56,7 +57,7 @@ class SignatureHandlerTest extends TestCase
     public function testIsComponentVisible()
     {
         $this->initialize(true);
-        $this->assertEquals($this->visible, SignatureHandler::isComponentVisible($this->component, $this->command));
+        $this->assertEquals($this->visible, Commands::getInstance()->isComponentVisible($this->component));
     }
 
     /**
@@ -73,7 +74,7 @@ class SignatureHandlerTest extends TestCase
     public function testComponentExist()
     {
         $this->initialize(true);
-        $this->assertTrue(SignatureHandler::componentExist($this->component));
+        $this->assertTrue(Commands::getInstance()->componentExist($this->component));
     }
 
     /**
@@ -82,7 +83,7 @@ class SignatureHandlerTest extends TestCase
     public function testCommandExist()
     {
         $this->initialize(true);
-        $this->assertTrue(SignatureHandler::commandExist($this->component, $this->command));
+        $this->assertTrue(Commands::getInstance()->commandExist($this->component, $this->command));
     }
 
     /**
@@ -91,7 +92,7 @@ class SignatureHandlerTest extends TestCase
     public function testGetComponents()
     {
         $this->initialize(true);
-        $components = SignatureHandler::getComponents();
+        $components = Commands::getInstance()->getComponents();
         $this->assertTrue(is_array($components));
         $this->assertTrue(in_array($this->component, $components));
     }
@@ -102,7 +103,7 @@ class SignatureHandlerTest extends TestCase
     public function testGetCommands()
     {
         $this->initialize(true);
-        $commands = SignatureHandler::getCommands($this->component);
+        $commands = Commands::getInstance()->getCommands($this->component);
         $this->assertTrue(isset($commands[$this->command]));
         $commandProperties = $commands[$this->command];
         $this->assertEquals(TestCommand::class, $commandProperties['class']);
@@ -118,8 +119,8 @@ class SignatureHandlerTest extends TestCase
     public function testSetComponentVisibility()
     {
         $this->initialize(false);
-        SignatureHandler::setComponentVisibility($this->component, true);
-        $properties = $this->getPrivatePropertiesFromStaticClass(SignatureHandler::class);
+        Commands::getInstance()->setComponentVisibility($this->component, true);
+        $properties = $this->getPrivatePropertiesFromObject(Commands::getInstance());
         $this->assertArrayHasKey('visible', $properties);
         $this->assertTrue(isset($properties['visible'][$this->component]['*']));
         $this->assertTrue($properties['visible'][$this->component]['*']);
@@ -131,8 +132,8 @@ class SignatureHandlerTest extends TestCase
     public function testHideComponent()
     {
         $this->initialize(false);
-        SignatureHandler::hideComponent($this->component);
-        $properties = $this->getPrivatePropertiesFromStaticClass(SignatureHandler::class);
+        Commands::getInstance()->hideComponent($this->component);
+        $properties = $this->getPrivatePropertiesFromObject(Commands::getInstance());
         $this->assertArrayHasKey('visible', $properties);
         $this->assertTrue(isset($properties['visible'][$this->component]['*']));
         $this->assertFalse($properties['visible'][$this->component]['*']);
@@ -144,8 +145,8 @@ class SignatureHandlerTest extends TestCase
     public function testSetCommandVisibility()
     {
         $this->initialize(false);
-        SignatureHandler::setCommandVisibility($this->component, $this->command, true);
-        $properties = $this->getPrivatePropertiesFromStaticClass(SignatureHandler::class);
+        Commands::getInstance()->setCommandVisibility($this->component, $this->command, true);
+        $properties = $this->getPrivatePropertiesFromObject(Commands::getInstance());
         $this->assertArrayHasKey('visible', $properties);
         $this->assertTrue(isset($properties['visible'][$this->component][$this->command]));
         $this->assertTrue($properties['visible'][$this->component][$this->command]);
@@ -157,8 +158,8 @@ class SignatureHandlerTest extends TestCase
     public function testHideCommand()
     {
         $this->initialize(false);
-        SignatureHandler::hideCommand($this->component, $this->command);
-        $properties = $this->getPrivatePropertiesFromStaticClass(SignatureHandler::class);
+        Commands::getInstance()->hideCommand($this->component, $this->command);
+        $properties = $this->getPrivatePropertiesFromObject(Commands::getInstance());
         $this->assertArrayHasKey('visible', $properties);
         $this->assertTrue(isset($properties['visible'][$this->component][$this->command]));
         $this->assertFalse($properties['visible'][$this->component][$this->command]);
@@ -170,32 +171,34 @@ class SignatureHandlerTest extends TestCase
     public function testHideCommands()
     {
         $this->initialize(false);
-        SignatureHandler::hideCommands($this->component, [$this->command]);
-        $properties = $this->getPrivatePropertiesFromStaticClass(SignatureHandler::class);
+        Commands::getInstance()->hideCommands($this->component, [$this->command]);
+        $properties = $this->getPrivatePropertiesFromObject(Commands::getInstance());
         $this->assertArrayHasKey('visible', $properties);
         $this->assertTrue(isset($properties['visible'][$this->component][$this->command]));
         $this->assertFalse($properties['visible'][$this->component][$this->command]);
     }
 
     /**
-     * Get private properties from static class.
+     * Get private properties from object.
      *
-     * @param string $className
+     * @param string $object
      * @return array
      */
-    private function getPrivatePropertiesFromStaticClass($className)
+    private function getPrivatePropertiesFromObject($object)
     {
-        $result = [];
-        $object = new $className();
-        $reflectionClass = new ReflectionClass($className);
-        $properties = $reflectionClass->getProperties(ReflectionProperty::IS_PRIVATE);
-        if (count($properties) > 0) {
-            foreach ($properties as $property) {
-                $property->setAccessible(true);
-                $result[$property->getName()] = $property->getValue($object);
-            }
-        }
-        return $result;
+        return Obj::getProperties($object, null, Obj::PROPERTY_PRIVATE);
+//        $result = [];
+//        $object = new $className();
+//        $reflectionClass = new ReflectionClass($className);
+//        $properties = $reflectionClass->getProperties(ReflectionProperty::IS_PRIVATE);
+//        $properties = Obj::getProperties(Commands::getInstance(), null, Obj::PROPERTY_PRIVATE);
+//        if (count($properties) > 0) {
+//            foreach ($properties as $property) {
+//                $property->setAccessible(true);
+//                $result[$property->getName()] = $property->getValue($object);
+//            }
+//        }
+//        return $result;
     }
 
     /**
@@ -208,7 +211,8 @@ class SignatureHandlerTest extends TestCase
         require_once(dirname(__DIR__) . '/src/Loader.php');
         Loader::initialize();
         if ($registerCommand) {
-            SignatureHandler::register(TestCommand::class, true);
+            Commands::getInstance()->hideInternal(true);
+            Commands::getInstance()->register(TestCommand::class);
         }
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
 use CoRex\Command\BaseCommand;
+use CoRex\Command\Commands;
 use CoRex\Command\Handler;
 use CoRex\Command\Loader;
-use CoRex\Command\SignatureHandler;
-use CoRex\Command\Tests\Command\TestCommand;
 use PHPUnit\Framework\TestCase;
+use Tests\CoRex\Command\TestCommand;
 
 class BaseCommandTest extends TestCase
 {
@@ -16,7 +16,7 @@ class BaseCommandTest extends TestCase
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Command not found.');
-        SignatureHandler::call('test', 'unknown');
+        Commands::getInstance()->call('test', 'unknown');
     }
 
     /**
@@ -24,10 +24,10 @@ class BaseCommandTest extends TestCase
      */
     public function testMissingParameters()
     {
-        $this->initializeCommandHandler();
+        $this->initializeCommands();
         $this->expectException('Exception');
         $this->expectExceptionMessage('Argument required: param1');
-        SignatureHandler::call('test', 'command', [], true);
+        Commands::getInstance()->call('test', 'command', [], true);
     }
 
     /**
@@ -35,7 +35,7 @@ class BaseCommandTest extends TestCase
      */
     public function testSetProperties()
     {
-        $this->initializeCommandHandler();
+        $this->initializeCommands();
 
         // Test signature.
         $signature = [
@@ -126,7 +126,7 @@ class BaseCommandTest extends TestCase
         $value1 = md5(microtime(true));
         $value2 = md5(microtime(true));
         ob_start();
-        SignatureHandler::call('test', 'command', [
+        Commands::getInstance()->call('test', 'command', [
             'param1' => $value1,
             'param2' => $value2
         ], false);
@@ -146,7 +146,7 @@ class BaseCommandTest extends TestCase
         $value1 = md5(microtime(true));
         $value2 = md5(microtime(true));
         ob_start();
-        SignatureHandler::call('test', 'command', [
+        Commands::getInstance()->call('test', 'command', [
             'param1' => $value1,
             'param2' => $value2
         ], true);
@@ -311,7 +311,7 @@ class BaseCommandTest extends TestCase
      *
      * @param array $arguments Default [].
      */
-    private function initializeCommandHandler(array $arguments = [])
+    private function initializeCommands(array $arguments = [])
     {
         ob_start();
         Loader::initialize();
