@@ -1,7 +1,10 @@
 # CoRex Command
 Command Framework for php.
 
-**_Versioning for this package follows http://semver.org/. Backwards compatibility might break on upgrade to major versions._**
+![License](https://img.shields.io/packagist/l/corex/command.svg)
+![Build Status](https://travis-ci.org/corex/command.svg?branch=master)
+![codecov](https://codecov.io/gh/corex/command/branch/master/graph/badge.svg)
+
 
 You will recognize some familiar patterns i.e. signature from Laravel but with additional properties. This is for future use in other frameworks and CMS'es.
 
